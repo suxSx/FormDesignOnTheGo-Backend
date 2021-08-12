@@ -34,9 +34,10 @@ class RootController () {
     /* Mapping and creating end point for '/users' Regular GET request */
     @RequestMapping("/users", produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     @ResponseBody
-    fun getUsers(): MutableIterable<Accounts> {
-        return repository.findAll()
+    fun getUsers(): String {
+        return repository.findAll().toString()
     }
+
 
     /* Mapping and creating end point for '/users' Regular GET request */
     @GetMapping("/error", produces = [MediaType.APPLICATION_JSON_VALUE])

@@ -8,8 +8,11 @@ import javax.persistence.*
 
 /* Creating a Entity that map its self to a table with the same name as the class. If the class name is not the same as
 * the table you need to set a name. We do this in the @Table label. But anyway it is good practice to always name both. */
-@Entity(name = "accounts")
-@Table(name = "accounts")
+@Entity
+@Table(
+    name = "accounts",
+    schema = "public"
+)
 public class Accounts(
     /* Mapping ID to be the primary key, with Entity, this is done by using the label  @ID. Before the class we also
     * say that the class itself is a entity. So on compile it will try to find a table that has the same name as the
@@ -18,32 +21,22 @@ public class Accounts(
     * null, text, type, int and all you would like. This is not necessary here since we use flyway to create and
     * manage our database. */
     @Id
-    @GeneratedValue (
-        strategy = GenerationType.AUTO
-    )
-    @Column(
-        name = "user_id",
-    )
+    @Column( name = "user_id" )
     private var userID: Long,
-    @Column(
-        name = "username",
-    )
+
+    @Column( name = "username" )
     private var username: String,
-    @Column(
-        name = "password",
-    )
+
+    @Column( name = "password" )
     private var password: String,
-    @Column(
-        name = "email",
-    )
+
+    @Column( name = "email" )
     private var email: String,
-    @Column(
-        name = "last_login",
-    )
+
+    @Column( name = "last_login" )
     private var lastLogin: String,
-    @Column(
-        name = "created_on",
-    )
+
+    @Column( name = "created_on" )
     private var createdOn: String
 ) {
 
