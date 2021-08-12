@@ -13,3 +13,4 @@ CREATE TABLE IF NOT EXISTS content (
     title VARCHAR (50) NOT NULL,
     content VARCHAR (255) NOT NULL
 );
+

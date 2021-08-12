@@ -31,6 +31,9 @@ dependencies {
     /* Adding Postgre SQL Dpendendecy to Gradle*/
     runtimeOnly ("org.postgresql:postgresql")
 
+    /* Adding JPA Constructor for easy mapping to database */
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
