@@ -1,12 +1,17 @@
 package cc.backdemo
 
+import com.fasterxml.jackson.databind.util.JSONPObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.json.GsonJsonParser
 import org.springframework.boot.runApplication
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 
 @SpringBootApplication
@@ -39,13 +44,17 @@ class RootController () {
     }
 
 
-    /* Mapping and creating end point for '/users' Regular GET request */
-    @GetMapping("/error", produces = [MediaType.APPLICATION_JSON_VALUE])
+    /* Mapping Create new account */
+    @GetMapping("/create", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun pageNotFound(): ResponseEntity<Any> {
-        return ResponseEntity(Message("ERROR", "NOPE"), HttpStatus.OK)
-    }
+    fun createAccount(): ResponseEntity<Any> {
+        var date: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now()).toString()
+        var mix: String = Random.nextInt().toString()
+        var kim = Accounts("kim$mix", "password", "kim$mix@gmail.com", date, date)
+        repository.save(kim)
 
+        return ResponseEntity(Message("account", "created account"), HttpStatus.OK)
+    }
 }
 
 

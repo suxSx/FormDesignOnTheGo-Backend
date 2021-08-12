@@ -13,17 +13,13 @@ import javax.persistence.*
     name = "accounts",
     schema = "public"
 )
-public class Accounts(
+class Accounts(
     /* Mapping ID to be the primary key, with Entity, this is done by using the label  @ID. Before the class we also
     * say that the class itself is a entity. So on compile it will try to find a table that has the same name as the
     * class and map it. Also we can use name here to name a reference to the table if we want different names in our
     * class script. You can also set propterties for the rows under  @collum as f.eks if it should be
     * null, text, type, int and all you would like. This is not necessary here since we use flyway to create and
     * manage our database. */
-    @Id
-    @Column( name = "user_id" )
-    private var userID: Long,
-
     @Column( name = "username" )
     private var username: String,
 
@@ -37,10 +33,15 @@ public class Accounts(
     private var lastLogin: String,
 
     @Column( name = "created_on" )
-    private var createdOn: String
-) {
+    private var createdOn: String,
 
-    constructor() : this(-1, "", "", "", "", "")
+    @Id
+    @SequenceGenerator(name = "accounts_user_id_seq", sequenceName = "accounts_user_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accounts_user_id_seq")
+    @Column( name = "user_id", columnDefinition = "serial")
+    private var userID: Int?=null
+) {
+    constructor() : this("", "", "", "", "")
 
     override fun toString(): String {
         return "Accounts(userID=$userID, username='$username', password='$password', email='$email', lastLogin='$lastLogin', createdOn='$createdOn')"
