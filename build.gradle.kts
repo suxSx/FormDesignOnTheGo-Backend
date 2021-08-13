@@ -22,6 +22,10 @@ repositories {
 /* Fly way are implimented here. And runs on startup for Springboot as Default.*/
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+
+    /* Temaplet manager for web page with thymeleaf */
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.flywaydb:flyway-core")

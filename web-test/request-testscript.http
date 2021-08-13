@@ -4,6 +4,9 @@ GET http://localhost:8080/
 ### Get Users
 GET localhost:8080/users
 
+### Get Users
+GET localhost:8080/users/1
+
 ### Try to add new user with post
 POST localhost:8080/add-user HTTP/1.1
 Host: localhost:8080
