@@ -1,5 +1,7 @@
 package cc.backdemo
 
+import cc.backdemo.module.account.Accounts
+import cc.backdemo.module.account.AccountsRepository
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.springframework.beans.factory.annotation.Autowired
@@ -99,6 +101,32 @@ class RootController () {
         /* Return user_id for the new account */
         userID = repository.findUserIdByUsername(userData.username)
         return returnNewUser(userID, userData)
+    }
+
+    /* Mapping for getting all Form data: /forms - GET
+     * Return Value Should be in JSON: {"form_id":"-Mg_KH0ykhXa661dlVXo", "form_time":"some_time_stamp"*/
+    @RequestMapping("/forms", method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun sendFormID(): ResponseEntity<Any> {
+        return ResponseEntity(returnOK("TEST FORMS- /FORMS"), HttpStatus.OK)
+    }
+
+    /* Mapping for adding form data /forms - POST */
+    @RequestMapping("/forms", method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE], consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun addNewForm(@RequestBody request: String): ResponseEntity<Any> {
+        return ResponseEntity(returnOK("POST REQUEST - /FORMS"), HttpStatus.OK)
+    }
+
+    /* Mapping for getting a specific form data /forms/{formid}
+    * Return in JSON:
+    * { "formInfo":{"info":[{"action":"","icon":"pos","id":1,"text":"","type":"Address"},{"action":"","icon":"phone","id":2,"text":"","type":"Phone"},{"action":"","icon":"email","id":3,"text":"","type":"Email"},{"action":"","icon":"corpo","id":4,"text":"","type":"Social"}],"title":"Super Title","titleLeft":""},
+    *   "formItems":[{"description":"","error":"","id":0,"needed":0,"options":"","rank":0,"title":"","type":"text","validation":"empty"},{"description":"","error":"","id":1,"needed":0,"options":"","rank":1,"title":"","type":"button","validation":"button"},{"description":"","error":"","id":2,"needed":0,"options":"","rank":2,"title":"","type":"textarea","validation":"empty"},{"description":"","error":"","id":3,"needed":0,"options":"","rank":3,"title":"","type":"button","validation":"button"},{"description":"","error":"","id":4,"needed":0,"options":"","rank":4,"title":"","type":"text","validation":"empty"},{"description":"","error":"","id":5,"needed":0,"options":"","rank":5,"title":"","type":"textarea","validation":"empty"},{"description":"","error":"","id":6,"needed":0,"options":"","rank":6,"title":"","type":"button","validation":"button"}],
+    *   "formTime":"8/8/2021, 12:35:40 PM"} */
+    @RequestMapping("forms/{form_id}", method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun sendFormForID(@PathVariable(value = "form_id") form_id: String): ResponseEntity<Any> {
+        return ResponseEntity(returnOK("FORM REQUEST FOR ID: $form_id"), HttpStatus.OK)
     }
 }
 

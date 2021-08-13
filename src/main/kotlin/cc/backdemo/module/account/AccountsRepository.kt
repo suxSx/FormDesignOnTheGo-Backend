@@ -1,4 +1,4 @@
-package cc.backdemo
+package cc.backdemo.module.account
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

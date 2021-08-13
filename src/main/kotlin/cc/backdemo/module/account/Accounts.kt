@@ -1,4 +1,4 @@
-package cc.backdemo
+package cc.backdemo.module.account
 
 /* Using Entity here to map a class to a table in postgresql */
 
