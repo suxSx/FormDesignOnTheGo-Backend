@@ -28,6 +28,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
+    /* Adding JSON */
+    implementation("com.google.code.gson:gson:2.8.5")
+
     /* Adding Postgre SQL Dpendendecy to Gradle*/
     runtimeOnly ("org.postgresql:postgresql")
 

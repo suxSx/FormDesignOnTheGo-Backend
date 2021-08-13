@@ -46,4 +46,10 @@ class Accounts(
     override fun toString(): String {
         return "Accounts(userID=$userID, username='$username', password='$password', email='$email', lastLogin='$lastLogin', createdOn='$createdOn')"
     }
+
+    fun getBasic(): BasicData {
+        return BasicData(username, email, lastLogin, createdOn)
+    }
 }
+
+data class BasicData(val username: String, val email: String, val lastLogin: String, val createdOn: String)
