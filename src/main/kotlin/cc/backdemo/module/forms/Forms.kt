@@ -16,13 +16,13 @@ import javax.persistence.*
 class Forms (
     /* ID placed last for easy adding of data, only one imput are required and it is time of creation */
     @Column (name = "form_time")
-    private var form_time: String,
+    public var form_time: String,
 
     @Id
     @SequenceGenerator(name = "forms_form_id_seq", sequenceName = "forms_form_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "forms_form_id_seq")
     @Column( name = "form_id", columnDefinition = "serial")
-    private var form_id: Int?=null,
+    public var form_id: Int?=null,
 ) {
     constructor() : this ( "" )
 }

@@ -30,8 +30,4 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
 Content-Type: application/json
 
-{
-  "username" : "hansenssss",
-  "password" : "secret-password-99",
-  "email" : "email-scret@hansen.nooss"
-}
+{"formItems":[{"id":0,"type":"text","title":"Text Field","description":"Som Decription","needed":"--OK--","options":"","rank":0,"validation":"empty","error":"no need for error"},{"id":1,"type":"button","title":"Submit the form","description":"","needed":"","options":"","rank":1,"validation":"button"}],"formInfo":{"title":"Super tile","titleLeft":"Sub Stutle","info":[{"id":1,"type":"Address","text":"","icon":"pos","action":"","error":"Enter a valid Adress only letter and number"},{"id":2,"type":"Phone","text":"","icon":"phone","action":"","error":"Enter a valid Phone only letter and number"},{"id":3,"type":"Email","text":"","icon":"email","action":"","error":"Enter a valid Email remember the @"},{"id":4,"type":"Social","text":"","icon":"corpo","action":"","error":"Enter a valid social address only letter and number"}]},"formTime":"8/16/2021, 10:48:31 AM"}

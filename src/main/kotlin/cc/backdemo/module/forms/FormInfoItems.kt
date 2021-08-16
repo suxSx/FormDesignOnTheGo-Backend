@@ -15,7 +15,7 @@ import javax.persistence.*
 class FormInfoItems (
     /* ID placed last for easy adding of data, only one imput are required and it is time of creation */
     @Column (name = "form_info_id")
-    public var form_info_id: Int,
+    public var form_info_id: Int?=null,
 
     /* Form Action String */
     @Column (name = "action")

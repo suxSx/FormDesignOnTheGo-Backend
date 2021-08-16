@@ -15,7 +15,7 @@ import javax.persistence.*
 class FormInfo (
     /* ID placed last for easy adding of data, only one imput are required and it is time of creation */
     @Column (name = "form_id")
-    public var form_id: Int,
+    public var form_id: Int?=null,
 
     /* Form Action String */
     @Column (name = "title")
@@ -26,7 +26,7 @@ class FormInfo (
     public var subtitle: String,
 
     @Id
-    @SequenceGenerator(name = "form_info_form_info_id_seq", sequenceName = "forms_form_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "form_info_form_info_id_seq", sequenceName = "form_info_form_info_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "form_info_form_info_id_seq")
     @Column( name = "form_info_id", columnDefinition = "serial")
     public var form_info_id: Int?=null,

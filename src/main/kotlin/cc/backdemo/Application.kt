@@ -4,6 +4,7 @@ import cc.backdemo.module.account.Accounts
 import cc.backdemo.module.account.AccountsRepository
 import cc.backdemo.module.forms.*
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -139,17 +140,48 @@ class RootController () {
     /* Mapping for adding form data /forms - POST */
     /* JSON THAT WILL BE RECIVED:
     * { "formItems":[{"id":0,"type":"text","title":"Text Field","description":"Som Decription","needed":"--OK--","options":"","rank":0,"validation":"empty","error":"no need for error"},{"id":1,"type":"button","title":"Submit the form","description":"","needed":"","options":"","rank":1,"validation":"button"}],
-    *   "formInfo":{"title":"Super tile","titleLeft":"Sub Stutle","info":[{"id":1,"type":"Address","text":"","icon":"pos","action":"","error":"Enter a valid Adress only letter and number"},{"id":2,"type":"Phone","text":"","icon":"phone","action":"","error":"Enter a valid Phone only letter and number"},{"id":3,"type":"Email","text":"","icon":"email","action":"","error":"Enter a valid Email remember the @"},{"id":4,"type":"Social","text":"","icon":"corpo","action":"","error":"Enter a valid social address only letter and number"}]},
+    *   "formInfo":{"title":"Super tile","subtitle":"Sub Stutle","info":[{"id":1,"type":"Address","text":"","icon":"pos","action":"","error":"Enter a valid Adress only letter and number"},{"id":2,"type":"Phone","text":"","icon":"phone","action":"","error":"Enter a valid Phone only letter and number"},{"id":3,"type":"Email","text":"","icon":"email","action":"","error":"Enter a valid Email remember the @"},{"id":4,"type":"Social","text":"","icon":"corpo","action":"","error":"Enter a valid social address only letter and number"}]},
     *   "formTime":"8/15/2021, 4:59:47 PM"}*/
     @RequestMapping("/forms", method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE], consumes = [MediaType.APPLICATION_JSON_VALUE])
+
+    /* Enabeling CORS for localhosting */
+    @CrossOrigin(origins = ["http://localhost:3000"])
+
+    /* Response body for POST /forms */
     @ResponseBody
     fun addNewForm(@RequestBody request: String): ResponseEntity<Any> {
-        return ResponseEntity(returnOK("POST REQUEST - /FORMS"), HttpStatus.OK)
+        /* Convert The JSON Object to Data Class.
+        * If the values do not match the data class, the values in the data class wil be set to NULL. */
+        val userFormData = Gson().fromJson(request, NewFormData::class.java)
+        println(userFormData)
+
+        /* Insert Time Into table: forms - Get New Form ID from table: forms or new form class */
+        val newForm = Forms(userFormData.formTime)
+        formRepo.save(newForm)
+
+        /* Insert form_id, title, subtitle into table: form_info -  Get new form_info_id with sql or class */
+        val newFormInfo = FormInfo(newForm.form_id, userFormData.formInfo.title.removeQuote(), userFormData.formInfo.subtitle.removeQuote());
+        formInfoHead.save(newFormInfo)
+
+        /* Insert info objects into table: info */
+        for(x in userFormData.formInfo.info) {
+            x.form_info_id = newFormInfo.form_info_id
+            formInfoItems.save(x)
+        }
+
+        /* Insert form items into table: form_items*/
+        for(x in userFormData.formItems) {
+            x.form_id = newForm.form_id
+            formItemRepo.save(x)
+        }
+
+        /* Return new form id*/
+        return ResponseEntity(Message("post-request", newForm.form_id.toString()), HttpStatus.OK)
     }
 
     /* Mapping for getting a specific form data /forms/{formid}
     * Return in JSON:
-    * { "formInfo":{"info":[{"action":"","icon":"pos","id":1,"text":"","type":"Address"},{"action":"","icon":"phone","id":2,"text":"","type":"Phone"},{"action":"","icon":"email","id":3,"text":"","type":"Email"},{"action":"","icon":"corpo","id":4,"text":"","type":"Social"}],"title":"Super Title","titleLeft":""},
+    * { "formInfo":{"info":[{"action":"","icon":"pos","id":1,"text":"","type":"Address"},{"action":"","icon":"phone","id":2,"text":"","type":"Phone"},{"action":"","icon":"email","id":3,"text":"","type":"Email"},{"action":"","icon":"corpo","id":4,"text":"","type":"Social"}],"title":"Super Title","subtitle":""},
     *   "formItems":[{"description":"","error":"","id":0,"needed":0,"options":"","rank":0,"title":"","type":"text","validation":"empty"},{"description":"","error":"","id":1,"needed":0,"options":"","rank":1,"title":"","type":"button","validation":"button"},{"description":"","error":"","id":2,"needed":0,"options":"","rank":2,"title":"","type":"textarea","validation":"empty"},{"description":"","error":"","id":3,"needed":0,"options":"","rank":3,"title":"","type":"button","validation":"button"},{"description":"","error":"","id":4,"needed":0,"options":"","rank":4,"title":"","type":"text","validation":"empty"},{"description":"","error":"","id":5,"needed":0,"options":"","rank":5,"title":"","type":"textarea","validation":"empty"},{"description":"","error":"","id":6,"needed":0,"options":"","rank":6,"title":"","type":"button","validation":"button"}],
     *   "formTime":"8/8/2021, 12:35:40 PM"} */
     @RequestMapping("forms/{form_id}", method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -175,7 +207,7 @@ class RootController () {
         /* Creating Info JSON Object*/
         val returnInfo = JsonObject()
         returnInfo.addProperty("title", formInfo.title)
-        returnInfo.addProperty("titleLeft", formInfo.subtitle)
+        returnInfo.addProperty("subtitle", formInfo.subtitle)
 
         /* Getting Info Items - for then to map it and add it into info JSON Object */
         val allInfoById = formInfoItems.getAllItemsById(formInfo.form_info_id)
@@ -207,6 +239,8 @@ class RootController () {
 /* Data Classes for intern use */
 data class Message(val status: String?, val message: String)
 data class NewUser(val username:String, val password: String, val email: String)
+data class NewFormData(val formTime: String, val formItems: List<FormItems>, val formInfo: InfoData)
+data class InfoData(val title: String, val subtitle: String, val info: List<FormInfoItems>)
 
 /* Is Null in data class */
 fun String.fromStringIsAnyNull(): Boolean {
@@ -250,6 +284,10 @@ fun String.isInt(): Boolean {
 
 fun String.removeBackSlash(): String {
     return this.replace("\\\"", "\"")
+}
+
+fun String.removeQuote(): String {
+    return this.replace("\"", "")
 }
 
 fun String.removeExtra(): String {
