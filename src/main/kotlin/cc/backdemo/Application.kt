@@ -126,7 +126,7 @@ class RootController () {
     @RequestMapping("/forms", method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
 
     /* Enabeling CORS for localhosting */
-    @CrossOrigin(origins = ["http://localhost:3000"])
+    @CrossOrigin(origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:80", "http://127.0.0.1:8080"])
 
     /* Respons body for the /form */
     @ResponseBody
@@ -145,7 +145,7 @@ class RootController () {
     @RequestMapping("/forms", method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE], consumes = [MediaType.APPLICATION_JSON_VALUE])
 
     /* Enabeling CORS for localhosting */
-    @CrossOrigin(origins = ["http://localhost:3000"])
+    @CrossOrigin(origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:80", "http://127.0.0.1:8080"])
 
     /* Response body for POST /forms */
     @ResponseBody
@@ -186,7 +186,7 @@ class RootController () {
     @RequestMapping("forms/{form_id}", method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
 
     /* Enabeling CORS for localhosting */
-    @CrossOrigin(origins = ["http://localhost:3000"])
+    @CrossOrigin(origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:80", "http://127.0.0.1:8080"])
 
     /* Respons body for the /forms/{id} */
     @ResponseBody
