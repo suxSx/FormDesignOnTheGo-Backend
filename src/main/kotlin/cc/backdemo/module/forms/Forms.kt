@@ -4,6 +4,7 @@ package cc.backdemo.module.forms
 
 /* This libares are imported from the implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 * found in gradle build */
+import com.google.gson.JsonObject
 import javax.persistence.*
 
 /* Entity used to map main form database */
@@ -22,7 +23,6 @@ class Forms (
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "forms_form_id_seq")
     @Column( name = "form_id", columnDefinition = "serial")
     private var form_id: Int?=null,
-
 ) {
     constructor() : this ( "" )
 }

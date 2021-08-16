@@ -2,6 +2,7 @@ package cc.backdemo
 
 import cc.backdemo.module.account.Accounts
 import cc.backdemo.module.account.AccountsRepository
+import cc.backdemo.module.forms.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,6 +31,22 @@ class RootController () {
     * declared after flyway f.eks have run and other options we may se in our script. */
     @Autowired
     lateinit var repository: AccountsRepository
+
+    /* Init Repo for formsTable */
+    @Autowired
+    lateinit var formRepo: FormsRepository
+
+    /* Init Repo for formsInfo */
+    @Autowired
+    lateinit var formInfoHead: FormInfoRepository
+
+    /* Init Repo for formsInfo */
+    @Autowired
+    lateinit var formInfoItems: FormInfoItemsRepository
+
+    /* Init Repo for formItems*/
+    @Autowired
+    lateinit var formItemRepo: FormItemsRepository
 
     /* Mapping and creating end point for '/' regular GET Request */
     @GetMapping("/", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -106,12 +123,24 @@ class RootController () {
     /* Mapping for getting all Form data: /forms - GET
      * Return Value Should be in JSON: {"form_id":"-Mg_KH0ykhXa661dlVXo", "form_time":"some_time_stamp"*/
     @RequestMapping("/forms", method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
+
+    /* Enabeling CORS for localhosting */
+    @CrossOrigin(origins = ["http://localhost:3000"])
+
+    /* Respons body for the /form */
     @ResponseBody
-    fun sendFormID(): ResponseEntity<Any> {
-        return ResponseEntity(returnOK("TEST FORMS- /FORMS"), HttpStatus.OK)
+    fun sendFormID(): String {
+        /* Mapping userdata and removing extra data such as password and displaying it. */
+        val allForms = formRepo.findAll()
+
+        return Gson().toJson(allForms)
     }
 
     /* Mapping for adding form data /forms - POST */
+    /* JSON THAT WILL BE RECIVED:
+    * { "formItems":[{"id":0,"type":"text","title":"Text Field","description":"Som Decription","needed":"--OK--","options":"","rank":0,"validation":"empty","error":"no need for error"},{"id":1,"type":"button","title":"Submit the form","description":"","needed":"","options":"","rank":1,"validation":"button"}],
+    *   "formInfo":{"title":"Super tile","titleLeft":"Sub Stutle","info":[{"id":1,"type":"Address","text":"","icon":"pos","action":"","error":"Enter a valid Adress only letter and number"},{"id":2,"type":"Phone","text":"","icon":"phone","action":"","error":"Enter a valid Phone only letter and number"},{"id":3,"type":"Email","text":"","icon":"email","action":"","error":"Enter a valid Email remember the @"},{"id":4,"type":"Social","text":"","icon":"corpo","action":"","error":"Enter a valid social address only letter and number"}]},
+    *   "formTime":"8/15/2021, 4:59:47 PM"}*/
     @RequestMapping("/forms", method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE], consumes = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun addNewForm(@RequestBody request: String): ResponseEntity<Any> {
@@ -124,9 +153,54 @@ class RootController () {
     *   "formItems":[{"description":"","error":"","id":0,"needed":0,"options":"","rank":0,"title":"","type":"text","validation":"empty"},{"description":"","error":"","id":1,"needed":0,"options":"","rank":1,"title":"","type":"button","validation":"button"},{"description":"","error":"","id":2,"needed":0,"options":"","rank":2,"title":"","type":"textarea","validation":"empty"},{"description":"","error":"","id":3,"needed":0,"options":"","rank":3,"title":"","type":"button","validation":"button"},{"description":"","error":"","id":4,"needed":0,"options":"","rank":4,"title":"","type":"text","validation":"empty"},{"description":"","error":"","id":5,"needed":0,"options":"","rank":5,"title":"","type":"textarea","validation":"empty"},{"description":"","error":"","id":6,"needed":0,"options":"","rank":6,"title":"","type":"button","validation":"button"}],
     *   "formTime":"8/8/2021, 12:35:40 PM"} */
     @RequestMapping("forms/{form_id}", method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
+
+    /* Enabeling CORS for localhosting */
+    @CrossOrigin(origins = ["http://localhost:3000"])
+
+    /* Respons body for the /forms/{id} */
     @ResponseBody
     fun sendFormForID(@PathVariable(value = "form_id") form_id: String): ResponseEntity<Any> {
-        return ResponseEntity(returnOK("FORM REQUEST FOR ID: $form_id"), HttpStatus.OK)
+        /* Check if Int / Valid form ID */
+        if(!form_id.isInt()) { return ResponseEntity(returnError("Invalid user id, check syntax"), HttpStatus.OK) }
+
+        /* Last Check Point if this Passes we can now assign values and get the rest of the data
+        *  Checking if form_info_id exist.*/
+        if(!formRepo.existFormById(form_id.toInt())) {
+            return ResponseEntity(returnError("No form with this ID was found"), HttpStatus.OK)
+        }
+
+        /* Getting Form Info */
+        val formInfo: FormInfo = formInfoHead.getFormInfoByFormId(form_id.toInt())
+
+        /* Creating Info JSON Object*/
+        val returnInfo = JsonObject()
+        returnInfo.addProperty("title", formInfo.title)
+        returnInfo.addProperty("titleLeft", formInfo.subtitle)
+
+        /* Getting Info Items - for then to map it and add it into info JSON Object */
+        val allInfoById = formInfoItems.getAllItemsById(formInfo.form_info_id)
+
+        /* Mapping Items */
+        val mappedInfoItems = allInfoById.map { item: FormInfoItems -> item.getItemInJSON()}
+        println(mappedInfoItems)
+
+        /* Adding infoItems to main Info */
+        returnInfo.addProperty("info", mappedInfoItems.toString())
+
+        /* Getting All Form Items - Then Mapping and adding */
+        val allFormItems = formItemRepo.getAllItemsById(form_id.toInt())
+
+        /* Mapping Items */
+        val mappedFormItem = allFormItems.map { item: FormItems -> item.getItemInJSON() }
+        println(mappedFormItem)
+
+        /* Creating Main Return JSON */
+        val returnObject = JsonObject()
+        returnObject.addProperty("formInfo", returnInfo.toString().removeBackSlash())
+        returnObject.addProperty("formItems", mappedFormItem.toString().removeBackSlash())
+
+        /* Returning JSON Object. */
+        return ResponseEntity(returnObject.toString().removeBackSlash().removeExtra(), HttpStatus.OK)
     }
 }
 
@@ -172,6 +246,14 @@ fun Any.returnJSON(): String {
 /* Check if String Can be Int */
 fun String.isInt(): Boolean {
     return if(this.isNullOrEmpty()) false else this.all { Character.isDigit(it) }
+}
+
+fun String.removeBackSlash(): String {
+    return this.replace("\\\"", "\"")
+}
+
+fun String.removeExtra(): String {
+   return this.replace(":\"{", ":{").replace("}\",", "},").replace(":\"[", ":[").replace("]\",", "]").replace("]\"}", "]}")
 }
 
 /* Return New User Data */
