@@ -153,7 +153,6 @@ class RootController () {
         /* Convert The JSON Object to Data Class.
         * If the values do not match the data class, the values in the data class wil be set to NULL. */
         val userFormData = Gson().fromJson(request, NewFormData::class.java)
-        println(userFormData)
 
         /* Insert Time Into table: forms - Get New Form ID from table: forms or new form class */
         val newForm = Forms(userFormData.formTime)
@@ -214,7 +213,6 @@ class RootController () {
 
         /* Mapping Items */
         val mappedInfoItems = allInfoById.map { item: FormInfoItems -> item.getItemInJSON()}
-        println(mappedInfoItems)
 
         /* Adding infoItems to main Info */
         returnInfo.addProperty("info", mappedInfoItems.toString())
@@ -224,7 +222,6 @@ class RootController () {
 
         /* Mapping Items */
         val mappedFormItem = allFormItems.map { item: FormItems -> item.getItemInJSON() }
-        println(mappedFormItem)
 
         /* Creating Main Return JSON */
         val returnObject = JsonObject()
